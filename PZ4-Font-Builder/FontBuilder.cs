@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using Microsoft.VisualBasic.CompilerServices;
 using System.Windows.Forms;
+using System.Text;
 
 namespace PZ4_Font_Builder
 {
@@ -77,7 +78,7 @@ namespace PZ4_Font_Builder
 			string text = this.ImagePath + charMap.ToString() + ".bmp";
 			if (!File.Exists(text))
 			{
-				text = this.ImagePath + "63.bmp";
+				throw new Exception($"Not found: {charMap}");
 			}
 			CharImage charImage2 = charImage;
 			string imagePath = text;
@@ -196,10 +197,10 @@ namespace PZ4_Font_Builder
 			{
 				foreach (char c in list2)
 				{
+					byte[] charByte = Encoding.GetEncoding("shift_jis").GetBytes(new char[] { c });
 					SymbolMap symbolMap = new SymbolMap();
-					symbolMap.CharCode = (ushort)c;
-					symbolMap.ID = symbolMap.CharCode;
-					BinaryDataSupport.FlipEndian(ref symbolMap.ID);
+					symbolMap.CharCode = charByte.Length == 1 ? new byte[] { 0x0, charByte.FirstOrDefault() } : charByte;
+					symbolMap.ID = charByte.Length == 1 ? new byte[] { charByte.FirstOrDefault(), 0x0 } : charByte.Reverse().ToArray();
 					symbolMap.XPos = (ushort)this.m_SubImages[c].XPos;
 					symbolMap.YPos = (ushort)this.m_SubImages[c].YPos;
 					symbolMap.XShift = (ushort)this.m_SubImages[c].XShift;

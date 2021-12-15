@@ -215,10 +215,9 @@ namespace PZ4_Font_Builder
             reader.Close();
             _Messages = result.ToArray();
         }
-        public byte[] Repack(string file, string gdlg)
+        public byte[] Build()
         {
-            string[] input = File.ReadAllLines(file);
-            BinaryReader reader = new BinaryReader(File.OpenRead(gdlg));
+            BinaryReader reader = new BinaryReader(File.OpenRead(_RootFile));
             Header header = ReadHeader(ref reader);
             TextEntry[] entries = ReadEntries(ref reader, header);
             MemoryStream stream = new MemoryStream();
@@ -229,7 +228,7 @@ namespace PZ4_Font_Builder
                 int pointer = 0;
                 for (int i = 0; i < entries.Length; i++)
                 {
-                    if (!input[i].StartsWith("{Copy}")) entries[i].Data = FullEncode(i < input.Length ? input[i] : "");
+                    if (!_Messages[i].StartsWith("{Copy}")) entries[i].Data = FullEncode(i < _Messages.Length ? _Messages[i] : "");
                     else
                     {
                         reader.BaseStream.Position = header.DialogDataOffset + entries[i].Pointer;
@@ -258,6 +257,7 @@ namespace PZ4_Font_Builder
                     writer.Write(entry.Pointer);
                 }
             }
+            reader.Close();
             return stream.ToArray();
         }
     }

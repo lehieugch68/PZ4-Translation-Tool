@@ -7,9 +7,9 @@ using System.Drawing;
 
 namespace PZ4_Font_Builder
 {
-    class GCT0
+    public static class GCT0
     {
-		private ulong Coords2Offset(int xPos, int yPos, int width, int height, decimal elementLength, int tileWidth = 1, int tileHeight = 1, bool getTileOffset = false, bool trimBorderTiles = true)
+		private static ulong Coords2Offset(int xPos, int yPos, int width, int height, decimal elementLength, int tileWidth = 1, int tileHeight = 1, bool getTileOffset = false, bool trimBorderTiles = true)
 		{
 			checked
 			{
@@ -50,7 +50,7 @@ namespace PZ4_Font_Builder
 				return Convert.ToUInt64(decimal.Multiply(new decimal(num14 + num13), elementLength));
 			}
 		}
-		private byte GetGrey(Color pixel)
+		private static byte GetGrey(Color pixel)
 		{
 			int r = (int)pixel.R;
 			int g = (int)pixel.G;
@@ -61,7 +61,7 @@ namespace PZ4_Font_Builder
 				return (byte)num;
 			}
 		}
-		public Bitmap LoadI4(int imgWidth, int imgHeight, BinaryReader reader)
+		public static Bitmap LoadI4(int imgWidth, int imgHeight, BinaryReader reader)
 		{
 			checked
 			{
@@ -103,7 +103,7 @@ namespace PZ4_Font_Builder
 				return result;
 			}
 		}
-		public byte[] WriteI4(Bitmap bitmapData)
+		public static byte[] WriteI4(Bitmap bitmapData)
 		{
 			MemoryStream stream = new MemoryStream();
 			using (BinaryWriter writer = new BinaryWriter(stream))

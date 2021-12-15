@@ -30,7 +30,7 @@ namespace PZ4_Font_Builder
         private void InitializeComponent()
         {
             this.btnBuild = new System.Windows.Forms.Button();
-            this.textBoxFile = new System.Windows.Forms.TextBox();
+            this.textBoxSTRIMAG2File = new System.Windows.Forms.TextBox();
             this.textBoxImage = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
@@ -40,6 +40,10 @@ namespace PZ4_Font_Builder
             this.textBoxTranslation = new System.Windows.Forms.TextBox();
             this.label5 = new System.Windows.Forms.Label();
             this.textBoxGDLG = new System.Windows.Forms.TextBox();
+            this.button1 = new System.Windows.Forms.Button();
+            this.button2 = new System.Windows.Forms.Button();
+            this.button3 = new System.Windows.Forms.Button();
+            this.button4 = new System.Windows.Forms.Button();
             this.checkBoxNumber = new System.Windows.Forms.CheckBox();
             this.SuspendLayout();
             // 
@@ -53,21 +57,25 @@ namespace PZ4_Font_Builder
             this.btnBuild.UseVisualStyleBackColor = true;
             this.btnBuild.Click += new System.EventHandler(this.btnBuild_Click);
             // 
-            // textBoxFile
+            // textBoxSTRIMAG2File
             // 
-            this.textBoxFile.AllowDrop = true;
-            this.textBoxFile.Location = new System.Drawing.Point(12, 124);
-            this.textBoxFile.Name = "textBoxFile";
-            this.textBoxFile.Size = new System.Drawing.Size(560, 20);
-            this.textBoxFile.TabIndex = 1;
+            this.textBoxSTRIMAG2File.AllowDrop = true;
+            this.textBoxSTRIMAG2File.Location = new System.Drawing.Point(87, 124);
+            this.textBoxSTRIMAG2File.Name = "textBoxSTRIMAG2File";
+            this.textBoxSTRIMAG2File.Size = new System.Drawing.Size(485, 20);
+            this.textBoxSTRIMAG2File.TabIndex = 1;
+            this.textBoxSTRIMAG2File.DragDrop += new System.Windows.Forms.DragEventHandler(this.textBoxSTRIMAG2File_DragDrop);
+            this.textBoxSTRIMAG2File.DragEnter += new System.Windows.Forms.DragEventHandler(this.textBoxSTRIMAG2File_DragEnter);
             // 
             // textBoxImage
             // 
             this.textBoxImage.AllowDrop = true;
-            this.textBoxImage.Location = new System.Drawing.Point(12, 170);
+            this.textBoxImage.Location = new System.Drawing.Point(87, 170);
             this.textBoxImage.Name = "textBoxImage";
-            this.textBoxImage.Size = new System.Drawing.Size(560, 20);
+            this.textBoxImage.Size = new System.Drawing.Size(485, 20);
             this.textBoxImage.TabIndex = 2;
+            this.textBoxImage.DragDrop += new System.Windows.Forms.DragEventHandler(this.textBoxImage_DragDrop);
+            this.textBoxImage.DragEnter += new System.Windows.Forms.DragEventHandler(this.textBoxImage_DragEnter);
             // 
             // label1
             // 
@@ -116,10 +124,12 @@ namespace PZ4_Font_Builder
             // textBoxTranslation
             // 
             this.textBoxTranslation.AllowDrop = true;
-            this.textBoxTranslation.Location = new System.Drawing.Point(12, 75);
+            this.textBoxTranslation.Location = new System.Drawing.Point(87, 75);
             this.textBoxTranslation.Name = "textBoxTranslation";
-            this.textBoxTranslation.Size = new System.Drawing.Size(560, 20);
+            this.textBoxTranslation.Size = new System.Drawing.Size(485, 20);
             this.textBoxTranslation.TabIndex = 7;
+            this.textBoxTranslation.DragDrop += new System.Windows.Forms.DragEventHandler(this.textBoxTranslation_DragDrop);
+            this.textBoxTranslation.DragEnter += new System.Windows.Forms.DragEventHandler(this.textBoxTranslation_DragEnter);
             // 
             // label5
             // 
@@ -133,10 +143,48 @@ namespace PZ4_Font_Builder
             // textBoxGDLG
             // 
             this.textBoxGDLG.AllowDrop = true;
-            this.textBoxGDLG.Location = new System.Drawing.Point(12, 30);
+            this.textBoxGDLG.Location = new System.Drawing.Point(87, 30);
             this.textBoxGDLG.Name = "textBoxGDLG";
-            this.textBoxGDLG.Size = new System.Drawing.Size(560, 20);
+            this.textBoxGDLG.Size = new System.Drawing.Size(485, 20);
             this.textBoxGDLG.TabIndex = 9;
+            this.textBoxGDLG.DragDrop += new System.Windows.Forms.DragEventHandler(this.textBoxGDLG_DragDrop);
+            this.textBoxGDLG.DragEnter += new System.Windows.Forms.DragEventHandler(this.textBoxGDLG_DragEnter);
+            // 
+            // button1
+            // 
+            this.button1.Location = new System.Drawing.Point(12, 28);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(69, 23);
+            this.button1.TabIndex = 13;
+            this.button1.Text = "Select";
+            this.button1.UseVisualStyleBackColor = true;
+            // 
+            // button2
+            // 
+            this.button2.Location = new System.Drawing.Point(12, 73);
+            this.button2.Name = "button2";
+            this.button2.Size = new System.Drawing.Size(69, 23);
+            this.button2.TabIndex = 14;
+            this.button2.Text = "Select";
+            this.button2.UseVisualStyleBackColor = true;
+            // 
+            // button3
+            // 
+            this.button3.Location = new System.Drawing.Point(12, 122);
+            this.button3.Name = "button3";
+            this.button3.Size = new System.Drawing.Size(69, 23);
+            this.button3.TabIndex = 15;
+            this.button3.Text = "Select";
+            this.button3.UseVisualStyleBackColor = true;
+            // 
+            // button4
+            // 
+            this.button4.Location = new System.Drawing.Point(12, 168);
+            this.button4.Name = "button4";
+            this.button4.Size = new System.Drawing.Size(69, 23);
+            this.button4.TabIndex = 16;
+            this.button4.Text = "Select";
+            this.button4.UseVisualStyleBackColor = true;
             // 
             // checkBoxNumber
             // 
@@ -153,6 +201,10 @@ namespace PZ4_Font_Builder
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(584, 291);
+            this.Controls.Add(this.button4);
+            this.Controls.Add(this.button3);
+            this.Controls.Add(this.button2);
+            this.Controls.Add(this.button1);
             this.Controls.Add(this.checkBoxNumber);
             this.Controls.Add(this.label5);
             this.Controls.Add(this.textBoxGDLG);
@@ -163,7 +215,7 @@ namespace PZ4_Font_Builder
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.textBoxImage);
-            this.Controls.Add(this.textBoxFile);
+            this.Controls.Add(this.textBoxSTRIMAG2File);
             this.Controls.Add(this.btnBuild);
             this.Name = "Main";
             this.Text = "Project Zero 4 Translation Tool";
@@ -176,7 +228,7 @@ namespace PZ4_Font_Builder
         #endregion
 
         private System.Windows.Forms.Button btnBuild;
-        private System.Windows.Forms.TextBox textBoxFile;
+        private System.Windows.Forms.TextBox textBoxSTRIMAG2File;
         private System.Windows.Forms.TextBox textBoxImage;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;
@@ -186,6 +238,10 @@ namespace PZ4_Font_Builder
         private System.Windows.Forms.TextBox textBoxTranslation;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.TextBox textBoxGDLG;
+        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Button button2;
+        private System.Windows.Forms.Button button3;
+        private System.Windows.Forms.Button button4;
         private System.Windows.Forms.CheckBox checkBoxNumber;
     }
 }

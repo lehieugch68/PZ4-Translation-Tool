@@ -12,9 +12,8 @@ namespace PZ4_Font_Builder
 		}
 		public bool ReadData(ref BinaryReader reader)
 		{
+			this.CharCode = reader.ReadBytes(2);
 			ushort num = reader.ReadUInt16();
-			this.CharCode = BinaryDataSupport.FlipEndian(ref num);
-			num = reader.ReadUInt16();
 			this.XPos = BinaryDataSupport.FlipEndian(ref num);
 			num = reader.ReadUInt16();
 			this.YPos = BinaryDataSupport.FlipEndian(ref num);
@@ -30,13 +29,12 @@ namespace PZ4_Font_Builder
 			this.XKerning = BinaryDataSupport.FlipEndian(ref num);
 			num = reader.ReadUInt16();
 			this.YKerning = BinaryDataSupport.FlipEndian(ref num);
-			num = reader.ReadUInt16();
-			this.ID = BinaryDataSupport.FlipEndian(ref num);
+			this.ID = reader.ReadBytes(2);
 			return true;
 		}
 		public void WriteData(ref BinaryWriter writer)
 		{
-			writer.Write(BinaryDataSupport.FlipEndian(ref this.CharCode));
+			writer.Write(this.CharCode);
 			writer.Write(BinaryDataSupport.FlipEndian(ref this.XPos));
 			writer.Write(BinaryDataSupport.FlipEndian(ref this.YPos));
 			writer.Write(BinaryDataSupport.FlipEndian(ref this.Width));
@@ -45,9 +43,9 @@ namespace PZ4_Font_Builder
 			writer.Write(BinaryDataSupport.FlipEndian(ref this.YShift));
 			writer.Write(BinaryDataSupport.FlipEndian(ref this.XKerning));
 			writer.Write(BinaryDataSupport.FlipEndian(ref this.YKerning));
-			writer.Write(BinaryDataSupport.FlipEndian(ref this.ID));
+			writer.Write(this.ID);
 		}
-		public ushort CharCode;
+		public byte[] CharCode;
 		public ushort XPos;
 		public ushort YPos;
 		public ushort Width;
@@ -56,6 +54,6 @@ namespace PZ4_Font_Builder
 		public ushort YShift;
 		public ushort XKerning;
 		public ushort YKerning;
-		public ushort ID;
+		public byte[] ID;
 	}
 }

@@ -55,11 +55,11 @@ namespace PZ4_Font_Builder
                 List<SymbolMap> glyphs = fontBuilder.FontMap;
                 STRIMAG2 strimag2 = new STRIMAG2(textBoxSTRIMAG2File.Text);
                 byte[] strimag2Data = strimag2.Build(glyphs, bitmap);
-                File.Move(textBoxSTRIMAG2File.Text, textBoxSTRIMAG2File.Text + ".backup");
+                //File.Move(textBoxSTRIMAG2File.Text, textBoxSTRIMAG2File.Text + ".backup");
                 File.WriteAllBytes(textBoxSTRIMAG2File.Text, strimag2Data);
 
                 byte[] gdlgData = gdlg.Build();
-                File.Move(textBoxGDLG.Text, textBoxGDLG.Text + ".backup");
+                //File.Move(textBoxGDLG.Text, textBoxGDLG.Text + ".backup");
                 File.WriteAllBytes(textBoxGDLG.Text, gdlgData);
 
                 File.WriteAllLines(textBoxGDLG.Text + ".txt", gdlg.Messages);

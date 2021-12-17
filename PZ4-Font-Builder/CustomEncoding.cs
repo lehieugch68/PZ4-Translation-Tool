@@ -10,15 +10,15 @@ namespace PZ4_Font_Builder
     {
 		private char[] _Skip = new char[]
 		{
-			'#', (char)128, (char)129, (char)130
+			'#', (char)129, (char)130, (char)131
 		};
 		private Dictionary<char, string> _Replace = new Dictionary<char, string>
 		{
-			{ (char)128, "#r#" }, { (char)129, "#b#" }, { (char)130, "#g#" }
+			{ (char)129, "#r#" }, { (char)130, "#b#" }, { (char)131, "#g#" }
 		};
 		private char[] _Number = new char[]
 		{
-			'-', '/', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '[', ']', 'x', ' '
+			'-', '/', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '[', ']', 'x', ':', ' '
 		};
 		private int _CodeNumber = 0x20;
 		private string[] _Messages;
@@ -55,7 +55,8 @@ namespace PZ4_Font_Builder
 					input[i] = input[i].Replace(entry.Value, entry.Key.ToString());
 				}
 			}
-			char[] chars = string.Join("", input).ToCharArray().Where(c => !_Number.Contains(c)).ToArray();
+			char[] chars = string.Join("", input).ToCharArray();
+			if (number)	chars = chars.Where(c => !_Number.Contains(c)).ToArray();
 			char[] uniqueChars = chars.Distinct().Where(c => !_Skip.Contains(c)).ToArray();
 			Dictionary<char, char> dict = new Dictionary<char, char>();
 			for (int i = 0; i < uniqueChars.Length; i++)
@@ -65,10 +66,17 @@ namespace PZ4_Font_Builder
 				if (codeNumber == 0x7F) codeNumber = 65377;
 				if (codeNumber == 65439) codeNumber = 12353;
 				if (codeNumber == 12435) codeNumber = 12449;
-				while (_Skip.Contains((char)newCode) || _Number.Contains((char)newCode))
+				while (_Skip.Contains((char)newCode))
 				{
 					newCode = codeNumber++;
 				};
+				if (number)
+                {
+					while (_Number.Contains((char)newCode))
+					{
+						newCode = codeNumber++;
+					};
+				}
 				dict.Add((char)charCode, (char)newCode);
 				_CharCode.Add((char)newCode, charCode);
 			}

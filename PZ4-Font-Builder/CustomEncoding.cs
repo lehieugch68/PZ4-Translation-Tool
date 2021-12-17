@@ -18,7 +18,7 @@ namespace PZ4_Font_Builder
 		};
 		private char[] _Number = new char[]
 		{
-			'-', '/', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '[', ']', 'x'
+			'-', '/', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '[', ']', 'x', ' '
 		};
 		private int _CodeNumber = 0x20;
 		private string[] _Messages;
@@ -64,6 +64,7 @@ namespace PZ4_Font_Builder
 				int newCode = codeNumber++;
 				if (codeNumber == 0x7F) codeNumber = 65377;
 				if (codeNumber == 65439) codeNumber = 12353;
+				if (codeNumber == 12435) codeNumber = 12449;
 				while (_Skip.Contains((char)newCode) || _Number.Contains((char)newCode))
 				{
 					newCode = codeNumber++;

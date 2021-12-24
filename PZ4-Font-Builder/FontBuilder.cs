@@ -96,7 +96,7 @@ namespace PZ4_Font_Builder
 				this.m_SubImages.Remove(charCode);
 			}
 		}
-		private void PlaceChar(ref CharImage newChar, int startX = 0, int startY = 0)
+		private void PlaceChar(ref CharImage newChar, int startX = 0, int startY = 0, int padding = 4)
 		{
 			checked
 			{
@@ -108,7 +108,7 @@ namespace PZ4_Font_Builder
 					int num4 = num - 1;
 					for (int j = startX; j <= num4; j++)
 					{
-						if (this.CheckFit(j, i, ref newChar))
+						if (this.CheckFit(j, i, ref newChar, padding))
 						{
 							newChar.XPos = j;
 							newChar.YPos = i;
@@ -128,22 +128,22 @@ namespace PZ4_Font_Builder
 				}
 			}
 		}
-		private bool CheckFit(int x, int y, ref CharImage newChar)
+		private bool CheckFit(int x, int y, ref CharImage newChar, int padding)
 		{
 			checked
 			{
-				if (x + newChar.Image.Width + 1 >= this.m_ImageWidth | y + newChar.Image.Height + 1 >= this.m_ImageHeight)
+				if (x + newChar.Image.Width + 1 + padding >= this.m_ImageWidth | y + newChar.Image.Height + 1 + padding >= this.m_ImageHeight)
 				{
 					return false;
 				}
-				Rectangle rectangle = new Rectangle(x, y, newChar.Image.Width, newChar.Image.Height);
+				Rectangle rectangle = new Rectangle(x, y, newChar.Image.Width + padding, newChar.Image.Height + padding);
 				List<char> list = this.m_SubImages.Keys.ToList<char>();
 				int num = 0;
 				int num2 = list.Count - 1;
 				for (int i = num; i <= num2; i++)
 				{
 					CharImage charImage = this.m_SubImages[list[i]];
-					Rectangle rect = new Rectangle(charImage.XPos, charImage.YPos, charImage.Width, charImage.Height);
+					Rectangle rect = new Rectangle(charImage.XPos, charImage.YPos, charImage.Width + padding, charImage.Height + padding);
 					if (rectangle.IntersectsWith(rect))
 					{
 						return false;

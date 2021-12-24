@@ -21,9 +21,9 @@ namespace PZ4_Font_Builder
 
         private void Main_Load(object sender, EventArgs e)
         {
-            textBoxGDLG.Text = @"D:\VietHoaGame\Fatal Frame 4\PZ4-RSL-Unpacker\PZ4-RSL-Unpacker\bin\Debug\EF926\0\0.GDLG";
-            textBoxSTRIMAG2File.Text = @"D:\VietHoaGame\Fatal Frame 4\PZ4-RSL-Unpacker\PZ4-RSL-Unpacker\bin\Debug\EF926\0\1";
-            textBoxTranslation.Text = @"D:\VietHoaGame\Fatal Frame 4\Translation\Vietnamese Script\EF926.RSL.txt";
+            textBoxGDLG.Text = @"D:\VietHoaGame\Fatal Frame 4\PZ4-RSL-Unpacker\PZ4-RSL-Unpacker\bin\Debug\D0001\7\0.GDLG";
+            textBoxSTRIMAG2File.Text = @"D:\VietHoaGame\Fatal Frame 4\PZ4-RSL-Unpacker\PZ4-RSL-Unpacker\bin\Debug\D0001\7\1";
+            textBoxTranslation.Text = @"D:\VietHoaGame\Fatal Frame 4\Translation\Vietnamese Script\D0001.RSL.txt";
             textBoxImage.Text = @"D:\VietHoaGame\Fatal Frame 4\Texture\FontSize-0-Vietnamese";
             textBoxKerning.Text = "4";
         }

@@ -53,7 +53,6 @@ namespace PZ4_Font_Builder
         {
             public int Pointer;
             public byte[] Data;
-            public string Text;
         }
         private Header ReadHeader(ref BinaryReader reader)
         {

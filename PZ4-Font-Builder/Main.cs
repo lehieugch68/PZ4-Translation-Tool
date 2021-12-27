@@ -25,7 +25,9 @@ namespace PZ4_Font_Builder
             textBoxSTRIMAG2File.Text = @"D:\VietHoaGame\Fatal Frame 4\PZ4-RSL-Unpacker\PZ4-RSL-Unpacker\bin\Debug\D0001\7\1";
             textBoxTranslation.Text = @"D:\VietHoaGame\Fatal Frame 4\Translation\Vietnamese Script\D0001.RSL.txt";
             textBoxImage.Text = @"D:\VietHoaGame\Fatal Frame 4\Texture\FontSize-0-Vietnamese";
+            textBoxGhostListFont.Text = @"D:\VietHoaGame\Fatal Frame 4\Texture\FontSize-0-Vietnamese";
             textBoxKerning.Text = "4";
+            textBoxKerningModTitle.Text = "4";
         }
 
         private void btnBuild_Click(object sender, EventArgs e)
@@ -36,7 +38,7 @@ namespace PZ4_Font_Builder
                 GDLG gdlg = new GDLG(textBoxGDLG.Text);
                 gdlg.GetStrings();
                 CustomEncoding customEncoding = new CustomEncoding();
-                customEncoding.Build(textBoxTranslation.Text, checkBoxNumber.Checked);
+                customEncoding.Build(textBoxTranslation.Text, checkBoxNumber.Checked, checkBoxGhostList.Checked);
                 string[] temp = new string[gdlg.Messages.Length];
                 for (int i = 0; i < temp.Length; i++)
                 {
@@ -50,6 +52,15 @@ namespace PZ4_Font_Builder
                 foreach (KeyValuePair<char, int> entry in customEncoding.CharCode)
                 {
                     fontBuilder.AddCharImage(entry.Key, entry.Value);
+                }
+                if (checkBoxGhostList.Checked)
+                {
+                    fontBuilder.ImagePath = textBoxGhostListFont.Text;
+                    fontBuilder.KerningMod = int.Parse(textBoxKerningModTitle.Text);
+                    foreach (KeyValuePair<char, int> entry in customEncoding.GhostListCharCode)
+                    {
+                        fontBuilder.AddCharImage(entry.Key, entry.Value);
+                    }
                 }
                 Bitmap bitmap = fontBuilder.FontImage;
                 List<SymbolMap> glyphs = fontBuilder.FontMap;

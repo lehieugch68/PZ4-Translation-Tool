@@ -82,7 +82,7 @@ namespace PZ4_Font_Builder
 			}
 			CharImage charImage2 = charImage;
 			string imagePath = text;
-			if (charImage2.LoadImage(imagePath, this.KerningMod))
+			if (charImage2.LoadImage(imagePath, this.m_KerningMod))
 			{
 				charImage.TrimImage();
 				this.PlaceChar(ref charImage, 0, 0);

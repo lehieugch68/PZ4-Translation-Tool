@@ -37,16 +37,25 @@ namespace PZ4_Font_Builder
 				return _CharCode;
             }
         }
+		private Dictionary<char, int> _GhostListCharCode;
+		public Dictionary<char, int> GhostListCharCode
+		{
+			get
+			{
+				return _GhostListCharCode;
+			}
+		}
 		public CustomEncoding()
         {
 
         }
 
-		public void Build(string translation, bool number)
+		public void Build(string translation, bool number, bool ghost)
 		{
 			string[] original = File.ReadAllLines(translation);
-			string[] input = original.Where(line => !line.StartsWith("{Copy}")).ToArray();
+			string[] input = original.Where(line => !line.StartsWith("{Copy}") && !line.StartsWith("{Title}")).ToArray();
 			_CharCode = new Dictionary<char, int>();
+			_GhostListCharCode = new Dictionary<char, int>();
 			int codeNumber = _CodeNumber;
 			for (int i = 0; i < input.Length; i++)
 			{
@@ -88,15 +97,48 @@ namespace PZ4_Font_Builder
 					_CharCode.Add((char)charCode, charCode);
 				}
 			}
+			string title = string.Empty;
+			Dictionary<char, char> titleDict = new Dictionary<char, char>();
+			if (ghost)
+            {
+				title = Array.Find(original, s => s.StartsWith("{Title}")).Replace("{Title}", "");
+				foreach (KeyValuePair<char, string> entry in _Replace)
+				{
+					title = title.Replace(entry.Value, entry.Key.ToString());
+				}
+				char[] titleChars = title.ToCharArray().Distinct().Where(c => !_Skip.Contains(c)).ToArray();
+				for (int i = 0; i < titleChars.Length; i++)
+				{
+					int charCode = (int)titleChars[i];
+					int newCode = codeNumber++;
+					if (codeNumber == 0x7F) codeNumber = 65377;
+					if (codeNumber == 65439) codeNumber = 12353;
+					if (codeNumber == 12435) codeNumber = 12449;
+					while (_Skip.Contains((char)newCode))
+					{
+						newCode = codeNumber++;
+					};
+					titleDict.Add((char)charCode, (char)newCode);
+					_GhostListCharCode.Add((char)newCode, charCode);
+				}
+			}
 			int index = 0;
 			for (int i = 0; i < original.Length; i++)
 			{
 				if (original[i].StartsWith("{Copy}")) continue;
-				char[] line = input[index++].ToCharArray();
+				string temp = string.Empty;
+				Dictionary<char, char> dictionary = dict;
+				if (original[i].StartsWith("{Title}") && ghost)
+				{
+					temp = title;
+					dictionary = titleDict;
+				}
+				else temp = input[index++];
+				char[] line = temp.ToCharArray();
 				for (int x = 0; x < line.Length; x++)
 				{
 					char c;
-					if (dict.TryGetValue(line[x], out c)) line[x] = c;
+					if (dictionary.TryGetValue(line[x], out c)) line[x] = c;
 				}
 				original[i] = string.Join("", line);
 				foreach (KeyValuePair<char, string> entry in _Replace)

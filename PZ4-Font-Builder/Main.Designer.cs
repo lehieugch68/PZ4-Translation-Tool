@@ -45,11 +45,15 @@ namespace PZ4_Font_Builder
             this.button3 = new System.Windows.Forms.Button();
             this.button4 = new System.Windows.Forms.Button();
             this.checkBoxNumber = new System.Windows.Forms.CheckBox();
+            this.checkBoxGhostList = new System.Windows.Forms.CheckBox();
+            this.textBoxGhostListFont = new System.Windows.Forms.TextBox();
+            this.labelTitle = new System.Windows.Forms.Label();
+            this.textBoxKerningModTitle = new System.Windows.Forms.TextBox();
             this.SuspendLayout();
             // 
             // btnBuild
             // 
-            this.btnBuild.Location = new System.Drawing.Point(12, 244);
+            this.btnBuild.Location = new System.Drawing.Point(12, 276);
             this.btnBuild.Name = "btnBuild";
             this.btnBuild.Size = new System.Drawing.Size(560, 23);
             this.btnBuild.TabIndex = 0;
@@ -99,7 +103,7 @@ namespace PZ4_Font_Builder
             // 
             this.textBoxKerning.Location = new System.Drawing.Point(196, 203);
             this.textBoxKerning.Name = "textBoxKerning";
-            this.textBoxKerning.Size = new System.Drawing.Size(376, 20);
+            this.textBoxKerning.Size = new System.Drawing.Size(135, 20);
             this.textBoxKerning.TabIndex = 5;
             this.textBoxKerning.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.textBoxKerning_KeyPress);
             // 
@@ -196,11 +200,49 @@ namespace PZ4_Font_Builder
             this.checkBoxNumber.Text = "Number Code";
             this.checkBoxNumber.UseVisualStyleBackColor = true;
             // 
+            // checkBoxGhostList
+            // 
+            this.checkBoxGhostList.AutoSize = true;
+            this.checkBoxGhostList.Location = new System.Drawing.Point(12, 243);
+            this.checkBoxGhostList.Name = "checkBoxGhostList";
+            this.checkBoxGhostList.Size = new System.Drawing.Size(73, 17);
+            this.checkBoxGhostList.TabIndex = 17;
+            this.checkBoxGhostList.Text = "Ghost List";
+            this.checkBoxGhostList.UseVisualStyleBackColor = true;
+            // 
+            // textBoxGhostListFont
+            // 
+            this.textBoxGhostListFont.AllowDrop = true;
+            this.textBoxGhostListFont.Location = new System.Drawing.Point(87, 241);
+            this.textBoxGhostListFont.Name = "textBoxGhostListFont";
+            this.textBoxGhostListFont.Size = new System.Drawing.Size(485, 20);
+            this.textBoxGhostListFont.TabIndex = 18;
+            // 
+            // labelTitle
+            // 
+            this.labelTitle.AutoSize = true;
+            this.labelTitle.Location = new System.Drawing.Point(343, 207);
+            this.labelTitle.Name = "labelTitle";
+            this.labelTitle.Size = new System.Drawing.Size(96, 13);
+            this.labelTitle.TabIndex = 20;
+            this.labelTitle.Text = "Kerning Mod (Title)";
+            // 
+            // textBoxKerningModTitle
+            // 
+            this.textBoxKerningModTitle.Location = new System.Drawing.Point(445, 204);
+            this.textBoxKerningModTitle.Name = "textBoxKerningModTitle";
+            this.textBoxKerningModTitle.Size = new System.Drawing.Size(127, 20);
+            this.textBoxKerningModTitle.TabIndex = 19;
+            // 
             // Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(584, 291);
+            this.ClientSize = new System.Drawing.Size(584, 311);
+            this.Controls.Add(this.labelTitle);
+            this.Controls.Add(this.textBoxKerningModTitle);
+            this.Controls.Add(this.textBoxGhostListFont);
+            this.Controls.Add(this.checkBoxGhostList);
             this.Controls.Add(this.button4);
             this.Controls.Add(this.button3);
             this.Controls.Add(this.button2);
@@ -243,6 +285,10 @@ namespace PZ4_Font_Builder
         private System.Windows.Forms.Button button3;
         private System.Windows.Forms.Button button4;
         private System.Windows.Forms.CheckBox checkBoxNumber;
+        private System.Windows.Forms.CheckBox checkBoxGhostList;
+        private System.Windows.Forms.TextBox textBoxGhostListFont;
+        private System.Windows.Forms.Label labelTitle;
+        private System.Windows.Forms.TextBox textBoxKerningModTitle;
     }
 }
 

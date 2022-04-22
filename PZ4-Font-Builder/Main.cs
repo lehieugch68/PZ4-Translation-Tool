@@ -36,20 +36,15 @@ namespace PZ4_Font_Builder
             {
                 
                 GDLG gdlg = new GDLG(textBoxGDLG.Text);
-                gdlg.GetStrings();
+                gdlg.GetStrings(textBoxTranslation.Text);
                 CustomEncoding customEncoding = new CustomEncoding();
-                customEncoding.Build(textBoxTranslation.Text, checkBoxNumber.Checked, checkBoxGhostList.Checked);
-                string[] temp = new string[gdlg.Messages.Length];
-                for (int i = 0; i < temp.Length; i++)
-                {
-                    temp[i] = customEncoding.Message[i].StartsWith("{Copy}") ? gdlg.Messages[i] : customEncoding.Message[i];
-                }
-                gdlg.Messages = temp;
+                customEncoding.Build(gdlg.Messages, checkBoxGhostList.Checked);
+                gdlg.Messages = customEncoding._Messages;
 
                 FontBuilder fontBuilder = new FontBuilder();
                 fontBuilder.ImagePath = textBoxImage.Text;
                 fontBuilder.KerningMod = int.Parse(textBoxKerning.Text);
-                foreach (KeyValuePair<char, int> entry in customEncoding.CharCode)
+                foreach (KeyValuePair<char, int> entry in customEncoding.CharCodes)
                 {
                     fontBuilder.AddCharImage(entry.Key, entry.Value);
                 }
@@ -57,7 +52,7 @@ namespace PZ4_Font_Builder
                 {
                     fontBuilder.ImagePath = textBoxGhostListFont.Text;
                     fontBuilder.KerningMod = int.Parse(textBoxKerningModTitle.Text);
-                    foreach (KeyValuePair<char, int> entry in customEncoding.GhostListCharCode)
+                    foreach (KeyValuePair<char, int> entry in customEncoding.GhostListCharCodes)
                     {
                         fontBuilder.AddCharImage(entry.Key, entry.Value);
                     }
@@ -66,14 +61,12 @@ namespace PZ4_Font_Builder
                 List<SymbolMap> glyphs = fontBuilder.FontMap;
                 STRIMAG2 strimag2 = new STRIMAG2(textBoxSTRIMAG2File.Text);
                 byte[] strimag2Data = strimag2.Build(glyphs, bitmap);
-                //File.Move(textBoxSTRIMAG2File.Text, textBoxSTRIMAG2File.Text + ".backup");
                 File.WriteAllBytes(textBoxSTRIMAG2File.Text, strimag2Data);
 
                 byte[] gdlgData = gdlg.Build();
-                //File.Move(textBoxGDLG.Text, textBoxGDLG.Text + ".backup");
                 File.WriteAllBytes(textBoxGDLG.Text, gdlgData);
 
-                File.WriteAllLines(textBoxGDLG.Text + ".txt", gdlg.Messages);
+                //preview
                 bitmap.Save(textBoxSTRIMAG2File.Text + ".bmp", ImageFormat.Bmp);
 
             }

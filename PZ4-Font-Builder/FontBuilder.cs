@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
-using Microsoft.VisualBasic.CompilerServices;
-using System.Windows.Forms;
 using System.Text;
 
 namespace PZ4_Font_Builder

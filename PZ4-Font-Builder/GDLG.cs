@@ -3,15 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.IO;
-using Microsoft.VisualBasic.CompilerServices;
-using Microsoft.VisualBasic;
 
 namespace PZ4_Font_Builder
 {
     public class GDLG
     {
         private string[] _Messages;
-        private string _RootFile;
         public string[] Messages
         {
             get
@@ -23,6 +20,8 @@ namespace PZ4_Font_Builder
                 _Messages = value;
             }
         }
+        private Page[] _Pages;
+        private string _RootFile;
         public string RootFile
         {
             get
@@ -38,23 +37,47 @@ namespace PZ4_Font_Builder
         {
             _RootFile = file;
         }
+        #region Structure
         private struct Header
         {
             public int Magic;
             public int Unk;
             public short PageCount;
-            public short LineCount;
+            public short MessageCount;
             public int PageDataOffset;
             public int PageTableOffset;
-            public int DialogDataOffset;
-            public int DialogTableOffset;
+            public int MessageDataOffset;
+            public int MessageTableOffset;
         }
-        private struct TextEntry
+        private struct DialogMessage
         {
             public int Pointer;
             public byte[] Data;
+            public string Text;
         }
-        private Header ReadHeader(ref BinaryReader reader)
+        private struct Page
+        {
+            public int Pointer;
+            public int Title;
+            public int DialogCount;
+            public int DialogOffset;
+            public PageDialog[] PageDialogs;
+        }
+        private struct PageDialog
+        {
+            public int Pointer;
+            public short Magic;
+            public ushort MessageCount;
+            public byte[] Unk;
+            public DialogMapping[] Messages;
+        }
+        private struct DialogMapping
+        {
+            public int Pointer;
+            public int Index;
+        }
+        #endregion
+        private static Header ReadHeader(ref BinaryReader reader)
         {
             reader.BaseStream.Seek(0, SeekOrigin.Begin);
             Header header = new Header();
@@ -62,143 +85,26 @@ namespace PZ4_Font_Builder
             if (header.Magic != 0x474C4447) throw new Exception("Unsupported file type.");
             header.Unk = reader.ReadInt32();
             header.PageCount = reader.ReadInt16();
-            header.LineCount = reader.ReadInt16();
+            header.MessageCount = reader.ReadInt16();
             header.PageDataOffset = reader.ReadInt32();
             header.PageTableOffset = reader.ReadInt32();
-            header.DialogDataOffset = reader.ReadInt32();
-            header.DialogTableOffset = reader.ReadInt32();
+            header.MessageDataOffset = reader.ReadInt32();
+            header.MessageTableOffset = reader.ReadInt32();
             return header;
         }
-        private TextEntry[] ReadEntries(ref BinaryReader reader, Header header)
+        private static DialogMessage[] ReadEntries(ref BinaryReader reader, Header header)
         {
-            List<TextEntry> result = new List<TextEntry>();
-            reader.BaseStream.Seek(header.DialogTableOffset, SeekOrigin.Begin);
-            for (int i = 0; i < header.LineCount; i++)
+            List<DialogMessage> list = new List<DialogMessage>();
+            reader.BaseStream.Seek(header.MessageTableOffset, SeekOrigin.Begin);
+            for (int i = 0; i < header.MessageCount; i++)
             {
-                TextEntry entry = new TextEntry();
+                DialogMessage entry = new DialogMessage();
                 entry.Pointer = reader.ReadInt32();
-                result.Add(entry);
+                list.Add(entry);
             }
-            return result.ToArray();
-        }
-        private string Bytes2Hex(byte[] data, bool splitBytes = false)
-        {
-            string text = "";
-            int num = 0;
-            checked
-            {
-                int num2 = data.Length - 1;
-                for (int i = num; i <= num2; i++)
-                {
-                    if (i > 0 && splitBytes)
-                    {
-                        text += " ";
-                    }
-                    text += Byte2Hex(data[i]);
-                }
-                return text;
-            }
-        }
-        private string Num2Hex(ulong value)
-        {
-            short num = 1;
-            byte[] array;
-            short num2;
-            short num3;
-            checked
-            {
-                while (Math.Pow(256.0, (double)num) <= value)
-                {
-                    num += 1;
-                }
-                array = new byte[(int)(num - 1 + 1)];
-                num2 = 0;
-                num3 = (short)(num - 1);
-            }
-            for (short num4 = num2; num4 <= num3; num4 += 1)
-            {
-                array[(int)num4] = Convert.ToByte(decimal.Remainder(new decimal(value), 256m));
-                value = checked((ulong)Math.Round((value - unchecked((ulong)array[(int)num4])) / 256.0));
-            }
-            return Bytes2Hex(array, false);
-        }
-        private string Byte2Hex(byte data)
-        {
-            string str = "";
-            str += Num2Char(checked((long)Math.Round(Math.Floor((double)data / 16.0))));
-            return str + Num2Char((long)(data % 16));
-        }
-        private string Num2Char(long data)
-        {
-            checked
-            {
-                string result;
-                if (data < 10L)
-                {
-                    result = Conversions.ToString(Strings.Chr((int)(48L + data)));
-                }
-                else
-                {
-                    result = Conversions.ToString(Strings.Chr((int)(65L + (data - 10L))));
-                }
-                return result;
-            }
-        }
-        private byte[] FullEncode(string source)
-        {
-            List<byte> list = Unicode2SJIS(source);
-            list.Add(0);
-            int num = 0;
-            checked
-            {
-                int num2 = list.Count - 1;
-                for (int i = num; i <= num2; i++)
-                {
-                    list[i] ^= 141;
-                }
-                return list.ToArray();
-            }
-        }
-        private string FullDecode(List<byte> sourceBytes)
-        {
-            List<byte> list = new List<byte>();
-            foreach (byte b in sourceBytes)
-            {
-                list.Add((byte)(b ^ 141));
-            }
-            return SJIS2Unicode(list);
-        }
-        private string SJIS2Unicode(List<byte> sourceBytes)
-        {
-            Encoding encoding = Encoding.GetEncoding("shift_jis");
-            Decoder decoder = encoding.GetDecoder();
-            int charCount = decoder.GetCharCount(sourceBytes.ToArray(), 0, sourceBytes.Count, true);
-            char[] array = new char[checked(charCount - 1 + 1)];
-            decoder.GetChars(sourceBytes.ToArray(), 0, sourceBytes.Count, array, 0, true);
-            string text = "";
-            foreach (char c in array)
-            {
-                text += c.ToString();
-            }
-            return text;
-        }
-        private List<byte> Unicode2SJIS(string source)
-        {
-            Encoding encoding = Encoding.GetEncoding("shift_jis");
-            Encoder encoder = encoding.GetEncoder();
-            int byteCount = encoder.GetByteCount(Conversions.ToCharArrayRankOne(source), 0, source.Count<char>(), true);
-            byte[] array = new byte[checked(byteCount - 1 + 1)];
-            encoder.GetBytes(source.ToCharArray(), 0, source.Count<char>(), array, 0, true);
-            return array.ToList<byte>();
-        }
-        public void GetStrings()
-        {
-            BinaryReader reader = new BinaryReader(File.OpenRead(_RootFile));
-            Header header = ReadHeader(ref reader);
-            TextEntry[] entries = ReadEntries(ref reader, header);
-            string[] result = new string[header.LineCount];
-            reader.BaseStream.Seek(header.DialogDataOffset, SeekOrigin.Begin);
-            for (int i = 0; i < result.Length; i++)
+            reader.BaseStream.Seek(header.MessageDataOffset, SeekOrigin.Begin);
+            DialogMessage[] result = list.ToArray();
+            for (int i = 0; i < header.MessageCount; i++)
             {
                 List<byte> bytes = new List<byte>();
                 byte b = reader.ReadByte();
@@ -208,52 +114,213 @@ namespace PZ4_Font_Builder
                     bytes.Add(b);
                     b = reader.ReadByte();
                 }
-                entries[i].Data = bytes.ToArray();
-                result[i] = FullDecode(bytes);
+                result[i].Data = bytes.ToArray();
+                result[i].Text = TextDecode(bytes);
+
             }
+            return result;
+        }
+        private static Page[] ReadPages(ref BinaryReader reader, Header header)
+        {
+            Page[] result = new Page[header.PageCount];
+            reader.BaseStream.Seek(header.PageTableOffset, SeekOrigin.Begin);
+            for (int i = 0; i < header.PageCount; i++)
+            {
+                result[i].Pointer = reader.ReadInt32();
+                long nextPage = reader.BaseStream.Position;
+                reader.BaseStream.Seek(header.PageDataOffset + result[i].Pointer, SeekOrigin.Begin);
+                result[i].Title = reader.ReadInt32();
+                result[i].DialogCount = reader.ReadInt32();
+                result[i].DialogOffset = reader.ReadInt32();
+                reader.BaseStream.Seek(header.PageDataOffset + result[i].Pointer + result[i].DialogOffset, SeekOrigin.Begin);
+                result[i].PageDialogs = new PageDialog[result[i].DialogCount];
+                for (int x = 0; x < result[i].DialogCount; x++)
+                {
+                    result[i].PageDialogs[x].Pointer = reader.ReadInt32();
+                    long nextDialog = reader.BaseStream.Position;
+                    reader.BaseStream.Seek(header.PageDataOffset + result[i].Pointer + result[i].PageDialogs[x].Pointer, SeekOrigin.Begin);
+                    long tableStart = reader.BaseStream.Position;
+                    result[i].PageDialogs[x].Magic = reader.ReadInt16();
+                    result[i].PageDialogs[x].MessageCount = reader.ReadUInt16();
+                    result[i].PageDialogs[x].Unk = reader.ReadBytes(0x1C);
+                    result[i].PageDialogs[x].Messages = new DialogMapping[result[i].PageDialogs[x].MessageCount];
+                    for (int y = 0; y < result[i].PageDialogs[x].MessageCount; y++)
+                    {
+                        result[i].PageDialogs[x].Messages[y].Pointer = reader.ReadInt32();
+                        long nextPointer = reader.BaseStream.Position;
+                        reader.BaseStream.Seek(tableStart + result[i].PageDialogs[x].Messages[y].Pointer, SeekOrigin.Begin);
+                        result[i].PageDialogs[x].Messages[y].Index = reader.ReadInt32();
+                        reader.BaseStream.Position = nextPointer;
+                    }
+                    reader.BaseStream.Position = nextDialog;
+                }
+                reader.BaseStream.Position = nextPage;
+            }
+            return result;
+        }
+        private static byte[] TextEncode(string source)
+        {
+            List<byte> list = Encoding.GetEncoding("shift_jis").GetBytes(source).ToList();
+            list.Add(0);
+            for (int i = 0; i <= list.Count - 1; i++)
+            {
+                list[i] ^= 141;
+            }
+            return list.ToArray();
+        }
+        private static string TextDecode(List<byte> sourceBytes)
+        {
+            List<byte> list = new List<byte>();
+            foreach (byte b in sourceBytes)
+            {
+                list.Add((byte)(b ^ 141));
+            }
+            string decoded = Encoding.GetEncoding("shift_jis").GetString(list.ToArray());
+            return decoded;
+        }
+        public void GetStrings(string txt)
+        {
+            BinaryReader reader = new BinaryReader(File.OpenRead(_RootFile));
+            Header header = ReadHeader(ref reader);
+            DialogMessage[] entries = ReadEntries(ref reader, header);
+            Page[] pages = ReadPages(ref reader, header);
+
+            List<string> result = new List<string>();
+            int index = 0;
+            using (StreamReader sr = new StreamReader(txt))
+            {
+                while (!sr.EndOfStream)
+                {
+                    string line = string.Empty;
+                    while (!line.StartsWith("#PAGE=") && !sr.EndOfStream)
+                    {
+                        line = sr.ReadLine();
+                    }
+                    if (sr.EndOfStream) break;
+                    int pageIndex = int.Parse(line.Split('=')[1]);
+                    string title = sr.ReadLine().Split('=')[1].Trim();
+                    int titleIndex = int.Parse(sr.ReadLine().Split('=')[1]);
+                    result.Add(title);
+                    pages[pageIndex].Title = index++;
+                    if (entries[titleIndex + 1].Text == "NON")
+                    {
+                        result.Add(entries[titleIndex + 1].Text);
+                        index++;
+                    }
+                    for (int i = 0; i < pages[pageIndex].DialogCount; i++)
+                    {
+                        while (!line.StartsWith("/*INDEX="))
+                        {
+                            line = sr.ReadLine();
+                        }
+                        int count = 0;
+                        int tableIndex = int.Parse(line.Split('=')[1]);
+                        line = sr.ReadLine();
+                        while (!line.StartsWith("*/"))
+                        {
+                            result.Add(line);
+                            count++;
+                            line = sr.ReadLine();
+                        }
+                        pages[pageIndex].PageDialogs[tableIndex].Messages = new DialogMapping[count];
+                        pages[pageIndex].PageDialogs[tableIndex].MessageCount = (ushort)count;
+                        for (int x = 0; x < count; x++)
+                        {
+                            pages[pageIndex].PageDialogs[i].Messages[x].Index = index++;
+                        }
+                    }
+                    while (!line.StartsWith("#END"))
+                    {
+                        line = sr.ReadLine();
+                    }
+                }
+            }
+
             reader.Close();
+            _Pages = pages;
             _Messages = result.ToArray();
         }
         public byte[] Build()
         {
             BinaryReader reader = new BinaryReader(File.OpenRead(_RootFile));
             Header header = ReadHeader(ref reader);
-            TextEntry[] entries = ReadEntries(ref reader, header);
+            //TextEntry[] entries = ReadEntries(ref reader, header);            
+            header.MessageCount = (short)_Messages.Length;
             MemoryStream stream = new MemoryStream();
             using (BinaryWriter writer = new BinaryWriter(stream))
             {
-                reader.BaseStream.Seek(0, SeekOrigin.Begin);
-                writer.Write(reader.ReadBytes(header.DialogDataOffset));
-                int pointer = 0;
-                for (int i = 0; i < entries.Length; i++)
+                writer.Write(header.Magic);
+                writer.Write(header.Unk);
+                writer.Write(header.PageCount);
+                writer.Write(header.MessageCount);
+                reader.BaseStream.Position = writer.BaseStream.Position;
+                writer.Write(reader.ReadBytes(0x14));
+                writer.Write(new byte[header.PageCount * 4]);
+                if ((header.PageCount * 4) % 0x20 != 0) writer.Write(new byte[0x20 - ((header.PageCount * 4) % 0x20)]);
+                header.MessageTableOffset = (int)writer.BaseStream.Position;
+                writer.Write(new byte[header.MessageCount * 4]);
+                if ((header.MessageCount * 4) % 0x10 != 0) writer.Write(new byte[0x10 - ((header.MessageCount * 4) % 0x10)]);
+                header.PageDataOffset = (int)writer.BaseStream.Position;
+                writer.BaseStream.Position = 0xC;
+                writer.Write(header.PageDataOffset);
+                writer.BaseStream.Position = header.PageDataOffset;
+                long pagePointer = 0;
+                for (int i = 0; i < header.PageCount; i++)
                 {
-                    if (!_Messages[i].StartsWith("{Copy}")) entries[i].Data = FullEncode(i < _Messages.Length ? _Messages[i] : "");
-                    else
+                    _Pages[i].Pointer = (int)pagePointer;
+                    long pageOffset = writer.BaseStream.Position;
+                    writer.BaseStream.Position = header.PageTableOffset + (i * 4);
+                    writer.Write(_Pages[i].Pointer);
+                    writer.BaseStream.Position = pageOffset;
+                    writer.Write(_Pages[i].Title);
+                    writer.Write(_Pages[i].DialogCount);
+                    writer.Write(_Pages[i].DialogOffset);
+                    writer.Write(new byte[0x14]);
+                    long dialogTableOffset = writer.BaseStream.Position;
+                    writer.Write(new byte[_Pages[i].DialogCount * 4]);
+                    if ((_Pages[i].DialogCount * 4) % 0x10 != 0) writer.Write(new byte[(0x10 - ((_Pages[i].DialogCount * 4) % 0x10))]);
+                    for (int x = 0; x < _Pages[i].DialogCount; x++)
                     {
-                        reader.BaseStream.Position = header.DialogDataOffset + entries[i].Pointer;
-                        List<byte> bytes = new List<byte>();
-                        byte b = reader.ReadByte();
-                        while (b != 0 && reader.BaseStream.Position < reader.BaseStream.Length)
+                        long dialogOffset = writer.BaseStream.Position;
+                        writer.BaseStream.Position = dialogTableOffset + (x * 4);
+                        writer.Write((int)(dialogOffset - pageOffset));
+                        writer.BaseStream.Position = dialogOffset;
+                        writer.Write(_Pages[i].PageDialogs[x].Magic);
+                        writer.Write(_Pages[i].PageDialogs[x].MessageCount);
+                        writer.Write(_Pages[i].PageDialogs[x].Unk);
+                        long messageTableOffset = writer.BaseStream.Position;
+                        writer.Write(new byte[_Pages[i].PageDialogs[x].MessageCount * 4]);
+                        if ((_Pages[i].PageDialogs[x].MessageCount * 4) % 0x10 != 0) writer.Write(new byte[0x10 - ((_Pages[i].PageDialogs[x].MessageCount * 4) % 0x10)]);
+                        for (int y = 0; y < _Pages[i].PageDialogs[x].MessageCount; y++)
                         {
-                            bytes.Add(b);
-                            if (b == 0x8D) break;
-                            b = reader.ReadByte();
+                            long messageOffset = writer.BaseStream.Position;
+                            writer.BaseStream.Position = messageTableOffset + (y * 4);
+                            writer.Write((int)(messageOffset - dialogOffset));
+                            writer.BaseStream.Position = messageOffset;
+                            writer.Write(_Pages[i].PageDialogs[x].Messages[y].Index);
+                            writer.Write(new byte[0xC]);
                         }
-                        entries[i].Data = bytes.ToArray();
                     }
-                    writer.Write(entries[i].Data);
-                    entries[i].Pointer = pointer;
-                    pointer += entries[i].Data.Length;
+                    pagePointer += writer.BaseStream.Position - pageOffset;
                 }
-                if (writer.BaseStream.Length % 0x20 != 0)
+                header.MessageDataOffset = (int)writer.BaseStream.Position;
+                writer.BaseStream.Position = 0x14;
+                writer.Write(header.MessageDataOffset);
+                writer.BaseStream.Position = header.MessageDataOffset;
+                for (int i = 0; i < header.MessageCount; i++)
                 {
-                    int padding = (int)(0x20 - (writer.BaseStream.Length % 0x20));
+                    byte[] encoded = TextEncode(_Messages[i]);
+                    long textPointer = writer.BaseStream.Position;
+                    writer.BaseStream.Position = header.MessageTableOffset + (i * 4);
+                    writer.Write((int)(textPointer - header.MessageDataOffset));
+                    writer.BaseStream.Position = textPointer;
+                    writer.Write(encoded);
+                }
+
+                if (writer.BaseStream.Length % 0x10 != 0)
+                {
+                    int padding = (int)(0x10 - (writer.BaseStream.Length % 0x10));
                     writer.Write(new byte[padding]);
-                }
-                writer.BaseStream.Seek(header.DialogTableOffset, SeekOrigin.Begin);
-                foreach (var entry in entries)
-                {
-                    writer.Write(entry.Pointer);
                 }
             }
             reader.Close();
